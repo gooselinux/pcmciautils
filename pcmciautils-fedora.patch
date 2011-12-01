@@ -1,0 +1,38 @@
+--- pcmciautils-014/Makefile.orig	2006-06-06 08:07:32.000000000 +0200
++++ pcmciautils-014/Makefile	2006-06-06 08:10:26.000000000 +0200
+@@ -147,30 +147,11 @@
+ LIB_OBJS = -lc -lsysfs
+ LIB_PCI_OBJS = -lc -lpci
+ 
+-ifeq ($(strip $(STATIC)),true)
+-	LIB_OBJS = -lsysfs
+-	LIB_PCI_OBJS = -lpci
+-	LDFLAGS += -static
+-else
+-	LDFLAGS += -Wl,-warn-common
+-endif
+-
+-ifeq ($(strip $(V)),false)
+-	QUIET=@$(PWD)/build/ccdv
+-	HOST_PROGS=build/ccdv
+-else
+-	QUIET=
+-	HOST_PROGS=
+-endif
+-
+-# if DEBUG is enabled, then we do not strip or optimize
+-ifeq ($(strip $(DEBUG)),true)
+-	CFLAGS  += -O1 -g -DDEBUG -D_GNU_SOURCE
+-	STRIPCMD = /bin/true -Since_we_are_debugging
+-else
+-	CFLAGS  += $(OPTIMIZATION) -fomit-frame-pointer -D_GNU_SOURCE
+-	STRIPCMD = $(STRIP) -s --remove-section=.note --remove-section=.comment
+-endif
++LIB_OBJS =  -Wl,-Bstatic -lsysfs -Wl,-Bdynamic
++LIB_PCI_OBJS =  -lpci
++CFLAGS  += $(RPM_OPT_FLAGS) $(OPTIMIZATION) -D_GNU_SOURCE
++LDFLAGS += -Wl,-warn-common
++STRIPCMD = /bin/true
+ 
+ # HOTPLUG or UDEV?
+ ifeq ($(strip $(UDEV)),false)
